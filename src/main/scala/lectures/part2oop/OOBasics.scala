@@ -37,28 +37,23 @@ class Person(name: String, age: Int = 0) {
         - isWrittenBy (author)
         - copy (new year of release) = new instance of Novel
 */
-
-object NovelWriter extends App{
-  val author = new Author ("Sam", "McCathie", 1995)
-  author.fullName()
-
-  val novel = new Novel ("Book 1", "Jan 1st 1990", "Mr Potato")
-  novel.authorAge(95)
-  novel.isWrittenBy("Seeek book")
-  novel.isWrittenBy("Seeeeker 2", "Big Cheese")
-}
-
-class Author (fName: String, lName: String, year: Int){
-  def fullName (): Unit = println(s"Author - $fName $lName, Born - $year")
+  object Questions extends App {
+  val author = new Writer("Z", "Zu", 1990)
+  val novel = new Novel("Great novel", 1995, author)
+  println(novel.authorAge) // returns 5
+  println(novel.isWrittenBy(author)) // returns true
 
 }
-class Novel (title: String, release: String, author: String){
-  def authorAge(age: Int): Unit = println(s"The author $author is $age years old")
-  def isWrittenBy(book: String): Unit = println(s"The book $book is written by $author.")
-  def isWrittenBy(book: String, author: String): Unit = println(s"New book $book written by $author" +
-                                                  s" -> original ${this.title} was written by ${this.author}")
-}
 
+  class Writer (firstName: String, surname: String, val year: Int) {
+    def fullName: String = firstName + " " + surname
+  }
+
+  class Novel(name: String, year: Int, author: Writer){ //author is grabbing information from the Writer class.
+    def authorAge = year - author.year // year can be accessed as it has been made a field by adding val as above.
+    def isWrittenBy (author: Writer) = author == this.author
+    def copy(newYear: Int): Novel = new Novel (name, newYear, author)
+  }
 /*
    Counter Class
     - receives an int value
@@ -66,13 +61,35 @@ class Novel (title: String, release: String, author: String){
     - method to increment/ decrement => new Counter
     - overload inc/ dec to receive an amount
 */
-object Calculator extends App {
-  val counter = new Counter(20)
-  counter.count()
-  counter.add(25)
+
+object QuestionsPt2 extends App {
+  val counter = new Counter // default value is implied to be 0 -> else would have had to add (0)
+  counter.inc.print // increments 1 x then prints value.
+  counter.inc.inc.inc.print // increments 3 x then prints value.
+  counter.inc(10).print // increments 10 x then prints value.
 }
 
-class Counter (start: Int) {
-  def count(): Unit = println(s"The count is $start")
-  def add(x: Int) = println(s"Count + Input = ${start + x}")
+class Counter(val count: Int = 0){ //(val count: Int) = def count = n
+  def inc = {
+    println("incrementing")
+    new Counter(count + 1)
+  } // immutability -> returning a new counter instead of modifying count in this instance.
+  // Instances are fixed and cannot be modified inside.
+  // when ever modifying an instance, you need to return a new instance.
+
+  def dec = {
+    println("decrementing")
+    new Counter(count - 1)
+  }
+
+  def inc(n: Int): Counter = { //Counter = the result type.
+    if (n <= 0) this // returns starting instance because nothing needs to occur.
+    else inc.inc(n - 1)
+
+  }
+  def dec(n: Int): Counter = {
+    if (n <= 0) this
+    else dec.dec(n-1)
+  }
+  def print = println(count)
 }
